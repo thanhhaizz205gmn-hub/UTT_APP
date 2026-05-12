@@ -26,7 +26,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
 
 .glass { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; backdrop-filter: blur(10px); }
 
-/* Header */
+/* ── Header ── */
 .app-header {
     background: var(--header-bg); backdrop-filter: blur(20px);
     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
@@ -40,26 +40,20 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
 .status-dot.pulse { animation: pulse 1.5s infinite; }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-/* Main Layout */
+/* ── Main Layout ── */
 .app-main { padding: 10px 15px 120px; }
 .page-section { display: none; animation: fadeIn 0.3s ease; }
 .page-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Camera Screen */
+/* ── Camera Screen (16:9) ── */
 .grid-controls { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; margin-bottom: 10px; font-size: 0.8rem; font-weight: 600; }
 .camera-grid { display: grid; gap: 12px; }
 .grid-1 { grid-template-columns: 1fr; }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-2 { grid-template-columns: 1fr; }
 .grid-4 { grid-template-columns: repeat(2, 1fr); }
-.grid-6 { grid-template-columns: repeat(2, 1fr); }
-.grid-8 { grid-template-columns: repeat(2, 1fr); }
-
-@media (min-width: 768px) {
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
-    .grid-6 { grid-template-columns: repeat(3, 1fr); }
-    .grid-8 { grid-template-columns: repeat(4, 1fr); }
-}
+.grid-6 { grid-template-columns: repeat(3, 1fr); }
+.grid-8 { grid-template-columns: repeat(4, 1fr); }
 
 .camera-card { 
     background: var(--card-bg); 
@@ -68,20 +62,20 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
     position: relative; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 9; /* ÉP TỈ LỆ 16:9 */
     border: 3px solid transparent;
     transition: all 0.3s;
 }
 
-.stream-container { width: 100%; height: 100%; background: #000; overflow: hidden; position: relative;}
-.stream-view { width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;}
+.stream-container { width: 100%; height: 100%; background: #000; overflow: hidden; }
+.stream-view { width: 100%; height: 100%; object-fit: cover; } /* LẤP ĐẦY 16:9 */
 
 .cam-info-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; z-index: 10; }
 .cam-tag { background: rgba(0,0,0,0.6); color: white; font-size: 0.6rem; padding: 4px 10px; border-radius: 6px; backdrop-filter: blur(5px); }
 .ai-indicator { width: 10px; height: 10px; border-radius: 50%; }
 .ai-indicator.active { background: var(--success); box-shadow: 0 0 10px var(--success); }
 
-/* Alert Effects */
+/* ── Alert Effects ── */
 .flash-red {
     animation: alert-glow 0.5s infinite alternate;
     border-color: var(--danger) !important;
@@ -100,13 +94,13 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
     100% { transform: rotate(0); }
 }
 
-/* Filter Bar */
-.ai-filter-bar { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; padding: 15px; margin-top: 15px; }
+/* ── Filter Bar ── */
+.ai-filter-bar { display: flex; justify-content: space-around; padding: 15px; margin-top: 15px; }
 .chip input { display: none; }
 .chip span { display: flex; align-items: center; gap: 8px; padding: 10px 15px; border-radius: 14px; font-size: 0.75rem; font-weight: 600; background: var(--card-bg); color: var(--text-muted); border: 1.5px solid var(--border-color); cursor: pointer; }
 .chip input:checked + span { background: var(--primary); color: white; border-color: var(--primary); }
 
-/* Bottom Nav */
+/* ── Bottom Nav ── */
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
     background: var(--header-bg); backdrop-filter: blur(20px);
@@ -119,7 +113,7 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
 .robot-central { margin-top: -35px; }
 .robot-circle { width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4); border: 4px solid var(--bg-color); }
 
-/* Table */
+/* ── Table ── */
 .table-wrapper { overflow-x: auto; margin-top: 15px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
 th { text-align: left; padding: 12px; color: var(--text-muted); font-size: 0.7rem; }
@@ -127,14 +121,14 @@ td { padding: 15px 12px; border-top: 1px solid var(--border-color); }
 .badge-danger { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 8px; font-weight: 700; }
 .badge-warning { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 8px; font-weight: 700; }
 
-/* Notification Badge */
+/* ── Notification Badge ── */
 .notif-badge-container { position: relative; }
 .badge-count { position: absolute; top: -5px; right: -5px; background: var(--danger); color: #fff; font-size: .6rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .badge-count.pulse { animation: badge-pulse 0.5s infinite alternate; }
 @keyframes badge-pulse { from { transform:scale(1); } to { transform:scale(1.5); } }
 .btn-circle { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--card-bg); border: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-main); }
 
-/* Upload Inline Button */
+/* ── Upload Inline Button ── */
 .btn-upload-inline {
     display: flex; align-items: center; gap: 5px;
     padding: 7px 13px; border-radius: 10px;
@@ -146,7 +140,7 @@ td { padding: 15px 12px; border-top: 1px solid var(--border-color); }
 .btn-upload-inline:hover { background: var(--primary); color: #fff; }
 .mini-select { padding: 7px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-size: .8rem; font-weight: 600; }
 
-/* Camera List */
+/* ── Camera List ── */
 .cam-list-container { padding: 10px; }
 .cam-list-item { display: flex; align-items: center; gap: 14px; padding: 18px 16px; margin-bottom: 10px; border-radius: 16px; cursor: pointer; transition: background .2s; }
 .cam-list-item:hover { background: var(--primary-light); }

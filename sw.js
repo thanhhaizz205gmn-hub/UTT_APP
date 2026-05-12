@@ -1,4 +1,4 @@
-const CACHE_NAME = 'utt-ai-safety-v3';
+const CACHE_NAME = 'utt-ai-safety-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -9,9 +9,6 @@ const ASSETS_TO_CACHE = [
   '/assets/warning.WAV',
   '/assets/alarm.WAV',
   '/assets/video7.mp4',
-  '/models/best.onnx',
-  '/models/cone_sign.onnx',
-  '/models/tuthenga.onnx',
   'https://unpkg.com/lucide@latest',
   'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap'

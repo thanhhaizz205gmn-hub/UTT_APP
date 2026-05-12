@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>UTT AI SAFETY</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
+    <title>UTT AI SAFETY - COMMAND CENTER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 
 <body>
@@ -18,7 +17,8 @@
         <!-- Header -->
         <header class="app-header glass">
             <div class="header-left">
-                <img src="assets/logo.png" alt="UTT Logo" class="app-logo" onerror="this.src='https://via.placeholder.com/40'; this.onerror=null;">
+                <img src="assets/logo.png" alt="UTT Logo" class="app-logo"
+                    onerror="this.src='assets/logo.png'; this.onerror=null;">
                 <div class="brand-text">
                     <h1>UTT AI SAFETY</h1>
                     <div class="yolo-status">
@@ -41,11 +41,13 @@
             <!-- SECTION 1: MONITORING (HOME) -->
             <section id="section-home" class="page-section active">
 
-                <!-- Grid Controls -->
+                <!-- Grid Controls + Upload Button ngang hàng -->
                 <div class="grid-controls glass">
                     <span id="active-cam-label">CAM 01</span>
                     <div style="display:flex; gap:8px; align-items:center;">
-                        <button class="btn-upload-inline" id="btn-upload-video" title="Tải video lên" onclick="document.getElementById('file-upload').click()">
+                        <!-- NÚT + CHỌN VIDEO (ngang hàng với select camera) -->
+                        <button class="btn-upload-inline" id="btn-upload-video" title="Tải video lên để chạy AI"
+                            onclick="document.getElementById('file-upload').click()">
                             <i data-lucide="plus-circle"></i>
                             <span>Video</span>
                         </button>
@@ -61,7 +63,7 @@
                     </div>
                 </div>
 
-                <!-- CAMERA GRID -->
+                <!-- MẶC ĐỊNH GRID-1 (1 camera) -->
                 <div class="camera-grid grid-1" id="camera-grid-main">
                     <div class="camera-card active" id="primary-cam-card">
                         <div class="cam-info-top">
@@ -69,8 +71,7 @@
                             <span class="ai-indicator active"></span>
                         </div>
                         <div class="stream-container">
-                            <video id="source-video" src="assets/video7.mp4" loop playsinline crossorigin="anonymous" style="display:none;"></video>
-                            <canvas id="main-stream-canvas" class="stream-view"></canvas>
+                            <img id="main-stream" src="/video_feed/1" class="stream-view">
                         </div>
                     </div>
                 </div>
@@ -99,21 +100,10 @@
             <!-- SECTION 2: SYSTEM -->
             <section id="section-system" class="page-section">
                 <div class="section-header">HỆ THỐNG CAMERA</div>
-                <div id="system-cam-list" class="cam-list-container">
-                    <div class="cam-list-item glass" onclick="switchSource('assets/video7.mp4', 'Demo Video')">
-                        <div class="ai-indicator active"></div>
-                        <div class="cam-info"><strong>Demo Video</strong><br><small>OFFLINE</small></div>
-                        <i data-lucide="chevron-right" style="margin-left:auto; color:var(--text-muted)"></i>
-                    </div>
-                    <div class="cam-list-item glass" onclick="switchSource('webcam', 'Webcam')">
-                        <div class="ai-indicator active"></div>
-                        <div class="cam-info"><strong>Webcam Device</strong><br><small>LIVE</small></div>
-                        <i data-lucide="chevron-right" style="margin-left:auto; color:var(--text-muted)"></i>
-                    </div>
-                </div>
+                <div id="system-cam-list" class="cam-list-container"></div>
             </section>
 
-            <!-- SECTION 3: STATS (Lịch sử vi phạm) -->
+            <!-- SECTION 3: STATS (Lịch sử vi phạm từ DB) -->
             <section id="section-stats" class="page-section">
                 <div class="section-header">LỊCH SỬ VI PHẠM</div>
                 <div class="table-wrapper glass">
@@ -127,17 +117,6 @@
                         </thead>
                         <tbody id="stats-table-body"></tbody>
                     </table>
-                </div>
-            </section>
-            
-            <!-- SECTION 4: SETTINGS -->
-            <section id="section-settings" class="page-section">
-                <div class="section-header">CÀI ĐẶT ỨNG DỤNG</div>
-                <div style="padding: 15px;">
-                    <button class="btn-upload-inline" style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 10px;" id="btn-install-pwa">
-                        Cài đặt ứng dụng PWA
-                    </button>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Phiên bản Offline AI Inference bằng ONNX Runtime Web. Mô hình sẽ được tải và lưu trong cache trình duyệt.</p>
                 </div>
             </section>
         </main>
@@ -163,19 +142,17 @@
         </nav>
     </div>
 
-    <!-- Audio alerts -->
+    <!-- Audio alerts (phải có user interaction trước khi play) -->
     <audio id="audio-warning" src="assets/warning.WAV" preload="auto"></audio>
     <audio id="audio-alarm" src="assets/alarm.WAV" preload="auto"></audio>
-    
     <script src="src/script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then((registration) => {
-                console.log('Service Worker registered with scope:', registration.scope);
-            }).catch((error) => {
-                console.log('Service Worker registration failed:', error);
-            });
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log('SW registered');
+            }).catch(console.error);
         }
     </script>
 </body>
+
 </html>
