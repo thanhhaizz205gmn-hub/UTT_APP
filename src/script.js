@@ -174,6 +174,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         return interArea / (box1Area + box2Area - interArea);
     }
 
+    function getIntersectionOverEquipment(equipBox, personBox) {
+        const xA = Math.max(equipBox[0], personBox[0]);
+        const yA = Math.max(equipBox[1], personBox[1]);
+        const xB = Math.min(equipBox[2], personBox[2]);
+        const yB = Math.min(equipBox[3], personBox[3]);
+        if (xB <= xA || yB <= yA) return 0;
+        const interArea = (xB - xA) * (yB - yA);
+        const equipArea = (equipBox[2] - equipBox[0]) * (equipBox[3] - equipBox[1]);
+        return equipArea > 0 ? interArea / equipArea : 0;
+    }
+
     async function processModel(session, tensor, confThreshold, classesCount) {
         const feeds = {};
         feeds[session.inputNames[0]] = tensor;
@@ -286,8 +297,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             
             persons.forEach((pBox, idx) => {
-                const hasHelmet = !getFilter('filter-helmet') || helmets.some(h => getIoU(pBox, h) > 0.05);
-                const hasVest = !getFilter('filter-vest') || vests.some(v => getIoU(pBox, v) > 0.10);
+                const hasHelmet = !getFilter('filter-helmet') || helmets.some(h => getIntersectionOverEquipment(h, pBox) > 0.05);
+                const hasVest = !getFilter('filter-vest') || vests.some(v => getIntersectionOverEquipment(v, pBox) > 0.10);
                 const missing = [];
                 if(!hasHelmet) missing.push("Helmet");
                 if(!hasVest) missing.push("Vest");

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'utt-ai-safety-v2';
+const CACHE_NAME = 'utt-ai-safety-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
