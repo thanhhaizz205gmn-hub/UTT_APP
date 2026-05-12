@@ -63,16 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // --- Grid Controls ---
-    const camCountSelect = document.getElementById('cam-count-select');
-    if (camCountSelect) {
-        camCountSelect.addEventListener('change', (e) => {
-            const val = e.target.value;
-            const grid = document.getElementById('camera-grid-main');
-            if (grid) grid.className = `camera-grid grid-${val}`;
-        });
-    }
-
     // --- Navigation ---
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {

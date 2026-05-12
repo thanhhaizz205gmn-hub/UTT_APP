@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>UTT AI SAFETY - COMMAND CENTER</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css?v=1.1">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,7 +16,7 @@
         <!-- Header -->
         <header class="app-header glass">
             <div class="header-left">
-                <img src="assets/logo.png" alt="UTT Logo" class="app-logo"
+                <img src="logo.png" alt="UTT Logo" class="app-logo"
                     onerror="this.src='assets/logo.png'; this.onerror=null;">
                 <div class="brand-text">
                     <h1>UTT AI SAFETY</h1>
@@ -57,8 +56,6 @@
                             <option value="1" selected>1 Camera</option>
                             <option value="2">2 Camera</option>
                             <option value="4">4 Camera</option>
-                            <option value="6">6 Camera</option>
-                            <option value="8">8 Camera</option>
                         </select>
                     </div>
                 </div>
@@ -143,16 +140,9 @@
     </div>
 
     <!-- Audio alerts (phải có user interaction trước khi play) -->
-    <audio id="audio-warning" src="assets/warning.WAV" preload="auto"></audio>
-    <audio id="audio-alarm" src="assets/alarm.WAV" preload="auto"></audio>
-    <script src="src/script.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(() => {
-                console.log('SW registered');
-            }).catch(console.error);
-        }
-    </script>
+    <audio id="audio-warning" src="warning.WAV" preload="auto"></audio>
+    <audio id="audio-alarm" src="alarm.WAV" preload="auto"></audio>
+    <script src="script.js?v=1.1"></script>
 </body>
 
 </html>

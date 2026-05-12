@@ -26,10 +26,10 @@ app.add_middleware(
 )
 
 # ─── CẤU HÌNH AI ────────────────────────────────────────────────────────────
-PPE_MODEL_PATH  = 'models/best.onnx'
-CONE_MODEL_PATH = 'models/cone_sign.onnx'
-FALL_MODEL_PATH = 'models/tuthenga.onnx'
-VIDEO_PATH      = 'assets/video7.mp4'
+PPE_MODEL_PATH  = '../best.pt'
+CONE_MODEL_PATH = '../cone_sign.pt'
+FALL_MODEL_PATH = '../tuthenga.pt'
+VIDEO_PATH      = '../video7.mp4'
 
 TEMP_DIR = "temp_videos"
 if not os.path.exists(TEMP_DIR):

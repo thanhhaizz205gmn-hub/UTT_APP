@@ -52,8 +52,6 @@ body { background: var(--bg-color); color: var(--text-main); font-family: 'Plus 
 .grid-1 { grid-template-columns: 1fr; }
 .grid-2 { grid-template-columns: 1fr; }
 .grid-4 { grid-template-columns: repeat(2, 1fr); }
-.grid-6 { grid-template-columns: repeat(3, 1fr); }
-.grid-8 { grid-template-columns: repeat(4, 1fr); }
 
 .camera-card { 
     background: var(--card-bg); 
