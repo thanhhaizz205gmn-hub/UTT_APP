@@ -229,11 +229,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         mainCanvas.height = h;
         ctx.drawImage(sourceVideo, 0, 0, w, h);
         
-        // Create scaled tensor for YOLO (640x640)
+        // Create scaled tensor for YOLO (640x640) with Letterboxing (đảm bảo độ chính xác)
         const offCtx = document.createElement('canvas').getContext('2d');
         offCtx.canvas.width = imgsz;
         offCtx.canvas.height = imgsz;
-        offCtx.drawImage(mainCanvas, 0, 0, imgsz, imgsz);
+        offCtx.fillStyle = '#000000'; // Pad color
+        offCtx.fillRect(0, 0, imgsz, imgsz);
+        
+        const scale = Math.min(imgsz / w, imgsz / h);
+        const new_w = Math.round(w * scale);
+        const new_h = Math.round(h * scale);
+        const pad_x = (imgsz - new_w) / 2;
+        const pad_y = (imgsz - new_h) / 2;
+        
+        offCtx.drawImage(mainCanvas, pad_x, pad_y, new_w, new_h);
         const imgData = offCtx.getImageData(0, 0, imgsz, imgsz).data;
         
         const floatData = new Float32Array(3 * imgsz * imgsz);
@@ -244,8 +253,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         const tensor = new ort.Tensor('float32', floatData, [1, 3, imgsz, imgsz]);
         
-        const xRatio = w / imgsz;
-        const yRatio = h / imgsz;
+        const mapBox = (b) => [
+            (b[0] - pad_x) / scale,
+            (b[1] - pad_y) / scale,
+            (b[2] - pad_x) / scale,
+            (b[3] - pad_y) / scale
+        ];
+
+        let ppeAlert = false;
 
         // 1. PPE Inference
         if(getFilter('filter-helmet') || getFilter('filter-vest')) {
@@ -255,65 +270,71 @@ document.addEventListener("DOMContentLoaded", async () => {
             const vests = [];
             
             preds.forEach(p => {
-                const box = [p.box[0]*xRatio, p.box[1]*yRatio, p.box[2]*xRatio, p.box[3]*yRatio];
+                const box = mapBox(p.box);
                 if(p.cls === 0) persons.push(box);
-                if(p.cls === 1 && getFilter('filter-helmet')) helmets.push(box);
-                if(p.cls === 2 && getFilter('filter-vest')) vests.push(box);
-                
-                // Draw helmets and vests
                 if(p.cls === 1 && getFilter('filter-helmet')) {
-                    ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 2; ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
+                    helmets.push(box);
+                    ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 1; 
+                    ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
                 }
                 if(p.cls === 2 && getFilter('filter-vest')) {
-                    ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2; ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
+                    vests.push(box);
+                    // (255, 230, 0) BGR -> Cyan/Blue in RGB
+                    ctx.strokeStyle = '#00e6ff'; ctx.lineWidth = 1; 
+                    ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
                 }
             });
             
-            persons.forEach(pBox => {
+            persons.forEach((pBox, idx) => {
                 const hasHelmet = !getFilter('filter-helmet') || helmets.some(h => getIoU(pBox, h) > 0.05);
-                const hasVest = !getFilter('filter-vest') || vests.some(v => getIoU(pBox, v) > 0.05);
+                const hasVest = !getFilter('filter-vest') || vests.some(v => getIoU(pBox, v) > 0.10);
                 const missing = [];
                 if(!hasHelmet) missing.push("Helmet");
                 if(!hasVest) missing.push("Vest");
                 
                 if(missing.length > 0) {
+                    ppeAlert = true;
                     ctx.strokeStyle = '#ff0000'; ctx.lineWidth = 3; 
                     ctx.strokeRect(pBox[0], pBox[1], pBox[2]-pBox[0], pBox[3]-pBox[1]);
                     ctx.fillStyle = '#ff0000'; ctx.font = '16px Arial';
-                    ctx.fillText(`!! NO ${missing.join(' & ')} !!`, pBox[0], pBox[1]-10);
-                    addLog('PPE', `Thiếu ${missing.join(' & ')}`);
+                    ctx.fillText(`!! NO ${missing.join(' & ')} !!`, pBox[0], pBox[1]-15);
+                    ctx.font = '12px Arial';
+                    ctx.fillText(`id:${idx}`, pBox[0], pBox[1]-2);
+                    addLog('PPE', `ID:${idx} No ${missing.join(' & ')}`);
                 } else {
                     ctx.strokeStyle = '#00ff00'; ctx.lineWidth = 2; 
                     ctx.strokeRect(pBox[0], pBox[1], pBox[2]-pBox[0], pBox[3]-pBox[1]);
                     ctx.fillStyle = '#00ff00'; ctx.font = '14px Arial';
-                    ctx.fillText('AN TOAN', pBox[0], pBox[1]-5);
+                    ctx.fillText(`ID:${idx} AN TOAN`, pBox[0], pBox[1]-8);
                 }
             });
         }
         
-        // 2. Fall Inference
-        if(getFilter('filter-pose')) {
-            const preds = await processModel(sessionFall, tensor, 0.40, 1);
-            preds.forEach(p => {
-                const box = [p.box[0]*xRatio, p.box[1]*yRatio, p.box[2]*xRatio, p.box[3]*yRatio];
-                ctx.strokeStyle = '#ff3300'; ctx.lineWidth = 3; 
-                ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
-                ctx.fillStyle = '#ff3300'; ctx.font = 'bold 20px Arial';
-                ctx.fillText('!!! FALL !!!', box[0], box[1]-10);
-                addLog('FALL', 'Phát hiện ngã');
-            });
-        }
-        
-        // 3. Cone/Sign Inference
+        // 2. Sign/Cone Inference
         if(getFilter('filter-sign')) {
             const preds = await processModel(sessionCone, tensor, 0.40, 2);
             preds.forEach(p => {
-                const box = [p.box[0]*xRatio, p.box[1]*yRatio, p.box[2]*xRatio, p.box[3]*yRatio];
-                ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2; 
+                const box = mapBox(p.box);
+                // (0, 220, 220) BGR -> Yellow in RGB
+                ctx.strokeStyle = '#dcdc00'; ctx.lineWidth = 2; 
                 ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
                 const name = p.cls === 0 ? "CONE" : "SIGN";
-                ctx.fillStyle = '#00ffff'; ctx.font = '14px Arial';
-                ctx.fillText(name, box[0], box[1]-5);
+                ctx.fillStyle = '#dcdc00'; ctx.font = '14px Arial';
+                ctx.fillText(name.toUpperCase(), box[0], box[1]-8);
+            });
+        }
+
+        // 3. Fall Inference
+        if(getFilter('filter-pose')) {
+            const preds = await processModel(sessionFall, tensor, 0.40, 1);
+            preds.forEach(p => {
+                const box = mapBox(p.box);
+                // (0, 80, 255) BGR -> Orange in RGB
+                ctx.strokeStyle = '#ff5000'; ctx.lineWidth = 3; 
+                ctx.strokeRect(box[0], box[1], box[2]-box[0], box[3]-box[1]);
+                ctx.fillStyle = '#ff5000'; ctx.font = 'bold 20px Arial';
+                ctx.fillText('!!! FALL !!!', box[0], box[1]-20);
+                addLog('FALL', 'Phát hiện ngã');
             });
         }
         
